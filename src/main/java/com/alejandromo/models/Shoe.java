@@ -1,5 +1,6 @@
 package com.alejandromo.models;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,14 +30,14 @@ public class Shoe {
 	@JoinColumn(name = "id_category", nullable = false)
 	private Category category;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
-	@Column(name = "description", nullable = false)
+	@Column(name = "description", nullable = false, length = 290)
 	private String description;
 
 	@Column(name = "price", nullable = false, precision = 5, scale = 2)
-	private Double price;
+	private BigDecimal price;
 
 	@CreationTimestamp
 	@Column(name = "create_date", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
@@ -53,12 +54,14 @@ public class Shoe {
 
 	}
 
-	public Shoe(int idShoe, Category category, String name, String description, Double price, Date lastUpdate) {
+	public Shoe(int idShoe, Category category, String name, String description, BigDecimal price, Date createDate,
+			Date lastUpdate) {
 		this.idShoe = idShoe;
 		this.category = category;
 		this.name = name;
 		this.description = description;
 		this.price = price;
+		this.createDate = createDate;
 		this.lastUpdate = lastUpdate;
 	}
 
@@ -95,11 +98,11 @@ public class Shoe {
 		this.description = description;
 	}
 
-	public Double getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(Double price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 

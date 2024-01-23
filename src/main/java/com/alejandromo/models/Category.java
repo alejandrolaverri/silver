@@ -2,13 +2,7 @@ package com.alejandromo.models;
 
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "category")
@@ -19,10 +13,10 @@ public class Category {
 	@Column(name = "id_category")
 	private int idCategory;
 
-	@Column(name = "name", nullable = false)
+	@Column(name = "name", length = 30, nullable = false)
 	private String name;
 
-	@OneToMany(mappedBy = "category")
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private List<Shoe> shoes;
 
 	// Constructors
@@ -57,11 +51,6 @@ public class Category {
 
 	public void setShoes(List<Shoe> shoes) {
 		this.shoes = shoes;
-	}
-
-	@Override
-	public String toString() {
-		return "Category [idCategory=" + idCategory + ", name=" + name + ", shoes=" + shoes + "]";
 	}
 
 }
