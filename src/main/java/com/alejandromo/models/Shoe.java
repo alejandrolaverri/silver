@@ -54,15 +54,11 @@ public class Shoe {
 
 	}
 
-	public Shoe(int idShoe, Category category, String name, String description, BigDecimal price, Date createDate,
-			Date lastUpdate) {
-		this.idShoe = idShoe;
+	public Shoe(String name, String description, BigDecimal price, Category category) {
 		this.category = category;
 		this.name = name;
 		this.description = description;
 		this.price = price;
-		this.createDate = createDate;
-		this.lastUpdate = lastUpdate;
 	}
 
 	// Getters and setters
@@ -120,5 +116,5 @@ public class Shoe {
 
 	public void setLastUpdate(Date lastUpdate) {
 		this.lastUpdate = lastUpdate;
-	}
+	}	
 }

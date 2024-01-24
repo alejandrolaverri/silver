@@ -2,6 +2,8 @@ package com.alejandromo.models;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -17,6 +19,7 @@ public class Category {
 	private String name;
 
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+	@JsonIgnore
 	private List<Shoe> shoes;
 
 	// Constructors
@@ -51,6 +54,11 @@ public class Category {
 
 	public void setShoes(List<Shoe> shoes) {
 		this.shoes = shoes;
+	}
+
+	@Override
+	public String toString() {
+		return "Category [idCategory=" + idCategory + ", name=" + name + ", shoes=" + shoes + "]";
 	}
 
 }
