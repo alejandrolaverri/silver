@@ -1,13 +1,18 @@
 package com.alejandromo.models;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
+import java.util.Set;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
@@ -33,6 +38,14 @@ public class Shoe {
 	@Column(name = "price", nullable = false, precision = 5, scale = 2)
 	private BigDecimal price;
 
+	@ManyToMany(cascade = { CascadeType.MERGE })
+	@JoinTable(
+		name = "shoe_color",
+		joinColumns = { @JoinColumn(name = "id_shoe") },
+		inverseJoinColumns = { @JoinColumn(name = "id_color") }
+	)
+	Set<Color> colors = new HashSet<>();
+	
 	// Constructors
 	public Shoe() {
 
@@ -84,6 +97,14 @@ public class Shoe {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
+	}
+
+	public Set<Color> getColors() {
+		return colors;
+	}
+
+	public void setColors(Set<Color> colors) {
+		this.colors = colors;
 	}
 
 }
