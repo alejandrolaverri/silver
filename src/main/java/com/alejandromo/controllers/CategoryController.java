@@ -1,5 +1,8 @@
 package com.alejandromo.controllers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,11 +14,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Category;
 import com.alejandromo.repositories.CategoryRepository;
+import com.alejandromo.repositories.ShoeRepository;
 
 @RestController
 @RequestMapping(path = "/api")
@@ -23,27 +26,36 @@ public class CategoryController {
 	@Autowired
 	private CategoryRepository categoryRepository;
 
+	@Autowired
+	private ShoeRepository shoeRepository;
+
 	@GetMapping("/category")
-	public @ResponseBody Iterable<Category> getAllCategories() {
-		return categoryRepository.findAll();
+	public ResponseEntity<List<Category>> getAllCategories() {
+		List<Category> res = new ArrayList<>();
+		for (Category category : categoryRepository.findAll()) {
+			res.add(category);
+		}
+		if (res.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@GetMapping("/category/{id}")
-	public ResponseEntity<Category> getById(@PathVariable int id) {
+	public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
 		Category category = categoryRepository.findById(id).orElse(null);
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		} else {
-			return new ResponseEntity<>(category, HttpStatus.OK);
 		}
+		return new ResponseEntity<>(category, HttpStatus.OK);
 	}
-	
+
 	@PostMapping("/category")
 	public ResponseEntity<Category> addCategory(@RequestBody Category category) {
 		Category temp = categoryRepository.save(category);
 		return new ResponseEntity<>(temp, HttpStatus.CREATED);
 	}
-	
+
 	@PutMapping("/category/{id}")
 	public ResponseEntity<Category> updateCategory(@PathVariable("id") int id, @RequestBody Category category) {
 		Category temp = categoryRepository.findById(id).orElse(null);
@@ -54,12 +66,15 @@ public class CategoryController {
 			return new ResponseEntity<>(categoryRepository.save(temp), HttpStatus.OK);
 		}
 	}
-	
+
 	@DeleteMapping("/category/{id}")
 	public ResponseEntity<HttpStatus> deleteCategory(@PathVariable("id") int id) {
-		Category temp = categoryRepository.findById(id).orElse(null);
-		if (temp == null) {
+		Category category = categoryRepository.findById(id).orElse(null);
+		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		if (shoeRepository.existsByCategoryIdCategory(id)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		categoryRepository.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
