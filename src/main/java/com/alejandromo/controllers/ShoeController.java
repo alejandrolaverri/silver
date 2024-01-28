@@ -17,8 +17,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Category;
+import com.alejandromo.models.Color;
 import com.alejandromo.models.Shoe;
 import com.alejandromo.repositories.CategoryRepository;
+import com.alejandromo.repositories.ColorRepository;
 import com.alejandromo.repositories.ShoeRepository;
 
 @RestController
@@ -26,10 +28,13 @@ import com.alejandromo.repositories.ShoeRepository;
 public class ShoeController {
 
 	@Autowired
+	private ShoeRepository shoeRepository;
+
+	@Autowired
 	private CategoryRepository categoryRepository;
 
 	@Autowired
-	private ShoeRepository shoeRepository;
+	private ColorRepository colorRepository;
 
 	@GetMapping("/shoe")
 	public ResponseEntity<List<Shoe>> getAllShoes() {
@@ -74,6 +79,18 @@ public class ShoeController {
 		return new ResponseEntity<Shoe>(shoeRepository.save(temp), HttpStatus.CREATED);
 	}
 
+	@PostMapping("/shoe/{idshoe}/color/{idcolor}")
+	public ResponseEntity<Shoe> addShoeColor(@PathVariable("idshoe") int idShoe, @PathVariable("idcolor") int idColor) {
+		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
+		Color color = colorRepository.findById(idColor).orElse(null);
+
+		if (shoe == null || color == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		shoe.getColors().add(color);
+		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.CREATED);
+	}
+
 	@PutMapping("/shoe/{id}")
 	public ResponseEntity<Shoe> updateShoe(@PathVariable("id") int id, @RequestBody Shoe shoe) {
 		Shoe temp = shoeRepository.findById(id).orElse(null);
@@ -93,5 +110,17 @@ public class ShoeController {
 		}
 		shoeRepository.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+
+	@DeleteMapping("/shoe/{idshoe}/color/{idcolor}")
+	public ResponseEntity<Shoe> deleteShoeColor(@PathVariable("idshoe") int idShoe,
+			@PathVariable("idcolor") int idColor) {
+		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
+		Color color = colorRepository.findById(idColor).orElse(null);
+		if (shoe == null || color == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		shoe.getColors().remove(color);
+		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.CREATED);
 	}
 }
