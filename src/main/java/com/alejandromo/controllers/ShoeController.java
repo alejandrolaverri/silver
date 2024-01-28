@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Category;
@@ -37,10 +38,25 @@ public class ShoeController {
 	private ColorRepository colorRepository;
 
 	@GetMapping("/shoe")
-	public ResponseEntity<List<Shoe>> getAllShoes() {
+	public ResponseEntity<List<Shoe>> getAllShoes(@RequestParam(required = false) String name, 
+			@RequestParam(required = false) String description) {
 		List<Shoe> res = new ArrayList<>();
-		for (Shoe shoe : shoeRepository.findAll()) {
-			res.add(shoe);
+		if (name != null && description != null) {
+			for (Shoe shoe : shoeRepository.findByNameContainingOrDescriptionContaining(name, description)) {
+				res.add(shoe);
+			}
+		} else if (name != null && description == null) {
+			for (Shoe shoe : shoeRepository.findByNameContaining(name)) {
+				res.add(shoe);
+			}
+		} else if (name == null && description != null) {
+			for (Shoe shoe : shoeRepository.findByDescriptionContaining(description)) {
+				res.add(shoe);
+			}
+		} else {
+			for (Shoe shoe : shoeRepository.findAll()) {
+				res.add(shoe);
+			}
 		}
 		if (res.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

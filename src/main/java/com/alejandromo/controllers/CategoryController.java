@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Category;
@@ -30,10 +31,16 @@ public class CategoryController {
 	private ShoeRepository shoeRepository;
 
 	@GetMapping("/category")
-	public ResponseEntity<List<Category>> getAllCategories() {
+	public ResponseEntity<List<Category>> getAllCategories(@RequestParam(required = false) String name) {
 		List<Category> res = new ArrayList<>();
-		for (Category category : categoryRepository.findAll()) {
-			res.add(category);
+		if (name == null) {
+			for (Category category : categoryRepository.findAll()) {
+				res.add(category);
+			}
+		} else {
+			for (Category category : categoryRepository.findByNameContaining(name)) {
+				res.add(category);
+			}
 		}
 		if (res.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);

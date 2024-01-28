@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Color;
@@ -26,10 +27,16 @@ public class ColorController {
 	ColorRepository colorRepository;
 	
 	@GetMapping("/color")
-	public ResponseEntity<List<Color>> getAllColors() {
+	public ResponseEntity<List<Color>> getAllColors(@RequestParam(required = false) String name) {
 		List<Color> res = new ArrayList<>();
-		for (Color color : colorRepository.findAll()) {
-			res.add(color);
+		if (name == null) {
+			for (Color color : colorRepository.findAll()) {
+				res.add(color);
+			}
+		} else {
+			for (Color color : colorRepository.findByNameContaining(name)) {
+				res.add(color);
+			}
 		}
 		if (res.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -44,6 +51,18 @@ public class ColorController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(color, HttpStatus.OK);		
+	}
+	
+	@GetMapping("shoe/{id}/color")
+	public ResponseEntity<List<Color>> getAllColorsByShoe(@PathVariable int id) {
+		List<Color> res = new ArrayList<>();
+		for(Color color: colorRepository.findByShoesIdShoe(id)) {
+			res.add(color);
+		}
+		if (res.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 	
 	@PostMapping("/color")
