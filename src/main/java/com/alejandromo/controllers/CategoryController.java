@@ -59,14 +59,18 @@ public class CategoryController {
 
 	@PostMapping("/category")
 	public ResponseEntity<Category> addCategory(@RequestBody Category category) {
-		Category temp = categoryRepository.save(category);
+		Category temp = categoryRepository.save(new Category(category.getName()));
 		return new ResponseEntity<>(temp, HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/categories")
 	public ResponseEntity<List<Category>> addCategories(@RequestBody List<Category> categories) {
+		List<Category> res = new ArrayList<>();
 		if (categories.size() == 0) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		for (Category category : categories) {
+			res.add(new Category(category.getName()));
 		}
 		return new ResponseEntity<>(categoryRepository.saveAll(categories), HttpStatus.CREATED);
 	}

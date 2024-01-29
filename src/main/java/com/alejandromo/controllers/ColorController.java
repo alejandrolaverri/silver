@@ -77,10 +77,14 @@ public class ColorController {
 	
 	@PostMapping("/colors")
 	public ResponseEntity<List<Color>> addColors(@RequestBody List<Color> colors) {
+		List<Color> res = new ArrayList<>();
 		if (colors.size() == 0) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		return new ResponseEntity<>(colorRepository.saveAll(colors), HttpStatus.CREATED);
+		for (Color color : colors) {
+			res.add(new Color(color.getName()));
+		}
+		return new ResponseEntity<>(colorRepository.saveAll(res), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/color/{id}")
