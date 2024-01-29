@@ -112,6 +112,8 @@ public class ShoeController {
 		Shoe temp = shoeRepository.findById(id).orElse(null);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else if (temp.getIdShoe() != shoe.getIdShoe()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			BeanUtils.copyProperties(shoe, temp);
 			return new ResponseEntity<>(shoeRepository.save(temp), HttpStatus.OK);

@@ -19,12 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Color;
 import com.alejandromo.repositories.ColorRepository;
+import com.alejandromo.repositories.ShoeRepository;
 
 @RestController
 @RequestMapping(path="/api")
 public class ColorController {
 	@Autowired
 	ColorRepository colorRepository;
+	
+	@Autowired
+	private ShoeRepository shoeRepository;
 	
 	@GetMapping("/color")
 	public ResponseEntity<List<Color>> getAllColors(@RequestParam(required = false) String name) {
@@ -84,9 +88,12 @@ public class ColorController {
 		Color temp = colorRepository.findById(id).orElse(null);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else if (temp.getIdColor() != color.getIdColor()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+		} else {
+			BeanUtils.copyProperties(color, temp);
+			return new ResponseEntity<>(colorRepository.save(temp), HttpStatus.OK);	
 		}
-		BeanUtils.copyProperties(color, temp);
-		return new ResponseEntity<>(colorRepository.save(temp), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/color/{id}")
@@ -94,6 +101,9 @@ public class ColorController {
 		Color color = colorRepository.findById(id).orElse(null);
 		if (color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		if (shoeRepository.existsByColorsIdColor(id)) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		colorRepository.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);

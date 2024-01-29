@@ -76,6 +76,8 @@ public class CategoryController {
 		Category temp = categoryRepository.findById(id).orElse(null);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		} else if (temp.getIdCategory() != category.getIdCategory()) {
+			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			BeanUtils.copyProperties(category, temp);
 			return new ResponseEntity<>(categoryRepository.save(temp), HttpStatus.OK);
