@@ -62,6 +62,14 @@ public class CategoryController {
 		Category temp = categoryRepository.save(category);
 		return new ResponseEntity<>(temp, HttpStatus.CREATED);
 	}
+	
+	@PostMapping("/categories")
+	public ResponseEntity<List<Category>> addCategories(@RequestBody List<Category> categories) {
+		if (categories.size() == 0) {
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		return new ResponseEntity<>(categoryRepository.saveAll(categories), HttpStatus.CREATED);
+	}
 
 	@PutMapping("/category/{id}")
 	public ResponseEntity<Category> updateCategory(@PathVariable("id") int id, @RequestBody Category category) {
