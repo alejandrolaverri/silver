@@ -8,7 +8,7 @@ Una fábrica de zapatos quiere construir una API para que sus distribuidores pue
 
 Está es la estructura de la base se de datos:
 
-![Proyecto Silver](https://github.com/alejandrolaverri/silver/assets/8649158/e3dbc874-67be-4184-9899-eacf48fe0f13)
+![Proyecto Silver](https://github.com/alejandrolaverri/silver/assets/8649158/53f42db4-7cc2-4e96-aee5-79747813e7c2)
 
 Para ver los endpoints del proyecto usar la url: [[URL de SWAGGER]](http://localhost:8080/swagger-ui/index.html)
 
