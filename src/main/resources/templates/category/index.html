@@ -17,13 +17,16 @@
 		<thead>
 			<tr>
 				<th>Nombre</th>
+				<th>Ver</th>
 				<th>Editar</th>
 				<th>Borrar</th>
 			</tr>
 		</thead>
 		<tbody>
 			<tr th:each="category : ${categories}">
-				<td th:text="${category.name}"></td>
+				<td th:text="${category.name}" />
+				<td><a class="btn btn-primary" th:href="@{/category/{id}(id=${category.idCategory})}">Ver</a>
+				</td>
 				<td><a class="btn btn-primary" th:href="@{/category/edit/{id}(id=${category.idCategory})}">Editar</a>
 				</td>
 				<td><a class="btn btn-danger" th:href="@{/category/delete/{id}(id=${category.idCategory})}">Borrar</a>

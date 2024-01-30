@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="UTF-8">
+	<title>Zapatos</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+	<!-- Latest compiled JavaScript -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</head>
+
+<body>
+	<h1 th:text="${category.name}" />
+	<p><a class="btn btn-success" th:href="@{/category/addshoe/{id}(id=${category.idCategory})}">Añadir zapato</a></p>
+	<table class="table table-striped">
+		<thead>
+			<tr>
+				<th>Nombre</th>
+				<th>Descripción</th>
+				<th>Precio</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr th:each="shoe : ${shoes}">
+				<td th:text="${shoe.name}" />
+				<td th:text="${shoe.description}" />
+				<td th:text="${shoe.price}" />
+			</tr>
+		</tbody>
+	</table>
+</body>
+
+</html>
