@@ -139,6 +139,6 @@ public class ShoeController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		shoe.getColors().remove(color);
-		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.CREATED);
+		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.OK);
 	}
 }
