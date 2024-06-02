@@ -1,4 +1,4 @@
-package com.alejandromo.controllers;
+package com.alejandromo.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.models.Category;
-import com.alejandromo.repositories.CategoryRepository;
-import com.alejandromo.repositories.ShoeRepository;
+import com.alejandromo.persistence.entity.Category;
+import com.alejandromo.persistence.jpa.CategoryJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeJpaRepository;
 
 @RestController
 @RequestMapping(path = "/api")
 public class CategoryController {
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryJpaRepository categoryRepository;
 
 	@Autowired
-	private ShoeRepository shoeRepository;
+	private ShoeJpaRepository shoeRepository;
 
 	@GetMapping("/category")
 	public ResponseEntity<List<Category>> getAllCategories(@RequestParam(required = false) String name) {

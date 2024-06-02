@@ -1,4 +1,4 @@
-package com.alejandromo.models;
+package com.alejandromo.persistence.entity;
 
 import java.math.BigDecimal;
 import java.util.HashSet;

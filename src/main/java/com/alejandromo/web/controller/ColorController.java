@@ -1,4 +1,4 @@
-package com.alejandromo.controllers;
+package com.alejandromo.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,18 +17,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.models.Color;
-import com.alejandromo.repositories.ColorRepository;
-import com.alejandromo.repositories.ShoeColorSizeRepository;
+import com.alejandromo.persistence.entity.Color;
+import com.alejandromo.persistence.jpa.ColorJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
 
 @RestController
 @RequestMapping(path="/api")
 public class ColorController {
 	@Autowired
-	private ColorRepository colorRepository;
+	private ColorJpaRepository colorRepository;
 	
 	@Autowired
-	private ShoeColorSizeRepository shoeColorSizeRepository;
+	private ShoeColorSizeJpaRepository shoeColorSizeRepository;
 	
 	@GetMapping("/color")
 	public ResponseEntity<List<Color>> getAllColors(@RequestParam(required = false) String name) {

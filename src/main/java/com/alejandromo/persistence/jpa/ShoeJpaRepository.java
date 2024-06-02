@@ -1,12 +1,12 @@
-package com.alejandromo.repositories;
+package com.alejandromo.persistence.jpa;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.alejandromo.models.Shoe;
+import com.alejandromo.persistence.entity.Shoe;
 
-public interface ShoeRepository extends JpaRepository<Shoe, Integer> {
+public interface ShoeJpaRepository extends JpaRepository<Shoe, Integer> {
 	List<Shoe> findByNameContaining(String name);
 	List<Shoe> findByDescriptionContaining(String description);
 	List<Shoe> findByNameContainingOrDescriptionContaining(String name, String description);

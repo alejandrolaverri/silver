@@ -1,4 +1,4 @@
-package com.alejandromo.models;
+package com.alejandromo.persistence.entity;
 
 import java.util.HashSet;
 import java.util.Set;

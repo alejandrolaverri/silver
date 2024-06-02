@@ -1,4 +1,4 @@
-package com.alejandromo.controllers;
+package com.alejandromo.web.controller;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,29 +17,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.models.Category;
-import com.alejandromo.models.Genre;
-import com.alejandromo.models.Shoe;
-import com.alejandromo.repositories.CategoryRepository;
-import com.alejandromo.repositories.GenreRepository;
-import com.alejandromo.repositories.ShoeColorSizeRepository;
-import com.alejandromo.repositories.ShoeRepository;
+import com.alejandromo.persistence.entity.Category;
+import com.alejandromo.persistence.entity.Genre;
+import com.alejandromo.persistence.entity.Shoe;
+import com.alejandromo.persistence.jpa.CategoryJpaRepository;
+import com.alejandromo.persistence.jpa.GenreJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeJpaRepository;
 
 @RestController
 @RequestMapping("/api")
 public class ShoeController {
 
 	@Autowired
-	private ShoeRepository shoeRepository;
+	private ShoeJpaRepository shoeRepository;
 
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private CategoryJpaRepository categoryRepository;
 
 	@Autowired
-	private GenreRepository genreRepository;
-	
-	@Autowired
-	private ShoeColorSizeRepository shoeColorSizeRepository;
+	private GenreJpaRepository genreRepository;
 	
 	@GetMapping("/shoe")
 	public ResponseEntity<List<Shoe>> getAllShoes(@RequestParam(required = false) String name, 
@@ -98,7 +95,12 @@ public class ShoeController {
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		Shoe temp = new Shoe(shoe.getName(), shoe.getDescription(), shoe.getPrice(), category, genre);
+		Shoe temp = new Shoe(shoe.getName(), 
+							 shoe.getDescription(), 
+							 shoe.getPrice(), 
+							 category, 
+							 genre
+							);
 		return new ResponseEntity<Shoe>(shoeRepository.save(temp), HttpStatus.CREATED);
 	}
 

@@ -1,15 +1,15 @@
-package com.alejandromo.repositories;
+package com.alejandromo.persistence.jpa;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.alejandromo.models.ShoeColorSize;
+import com.alejandromo.persistence.entity.ShoeColorSize;
 
 import jakarta.transaction.Transactional;
 
-public interface ShoeColorSizeRepository extends JpaRepository<ShoeColorSize, Integer> {
+public interface ShoeColorSizeJpaRepository extends JpaRepository<ShoeColorSize, Integer> {
     @Modifying
     @Transactional
     @Query("DELETE FROM ShoeColorSize scs WHERE scs.shoe.idShoe = :idShoe AND scs.color.idColor = :idColor")

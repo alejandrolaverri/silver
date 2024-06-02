@@ -1,4 +1,4 @@
-package com.alejandromo.controllers;
+package com.alejandromo.web.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,30 +10,30 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.models.Color;
-import com.alejandromo.models.Shoe;
-import com.alejandromo.models.ShoeColorSize;
-import com.alejandromo.models.Size;
-import com.alejandromo.repositories.ColorRepository;
-import com.alejandromo.repositories.ShoeColorSizeRepository;
-import com.alejandromo.repositories.ShoeRepository;
-import com.alejandromo.repositories.SizeRepository;
+import com.alejandromo.persistence.entity.Color;
+import com.alejandromo.persistence.entity.Shoe;
+import com.alejandromo.persistence.entity.ShoeColorSize;
+import com.alejandromo.persistence.entity.Size;
+import com.alejandromo.persistence.jpa.ColorJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
+import com.alejandromo.persistence.jpa.ShoeJpaRepository;
+import com.alejandromo.persistence.jpa.SizeJpaRepository;
 
 @RestController
 @RequestMapping(path="/api")
 public class ShoeColorSizeController {
 	
 	@Autowired
-	private ShoeRepository shoeRepository;
+	private ShoeJpaRepository shoeRepository;
 
 	@Autowired
-	private ColorRepository colorRepository;
+	private ColorJpaRepository colorRepository;
 	
 	@Autowired
-	private SizeRepository sizeRepository;
+	private SizeJpaRepository sizeRepository;
 	
 	@Autowired
-	private ShoeColorSizeRepository shoeColorSizeRepository;
+	private ShoeColorSizeJpaRepository shoeColorSizeRepository;
 
 	@PostMapping("/shoe/{idshoe}/size/{idsize}/color/{idcolor}")
 	public ResponseEntity<ShoeColorSize> addModelShoe(@PathVariable("idshoe") int idShoe,

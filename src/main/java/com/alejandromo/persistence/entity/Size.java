@@ -1,4 +1,4 @@
-package com.alejandromo.models;
+package com.alejandromo.persistence.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
