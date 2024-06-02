@@ -8,5 +8,4 @@ import com.alejandromo.models.Color;
 
 public interface ColorRepository extends JpaRepository<Color, Integer> {
 	List<Color> findByNameContaining(String name);
-	List<Color> findByShoesIdShoe(int id);
 }

@@ -18,10 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Category;
-import com.alejandromo.models.Color;
+import com.alejandromo.models.Genre;
 import com.alejandromo.models.Shoe;
 import com.alejandromo.repositories.CategoryRepository;
-import com.alejandromo.repositories.ColorRepository;
+import com.alejandromo.repositories.GenreRepository;
+import com.alejandromo.repositories.ShoeColorSizeRepository;
 import com.alejandromo.repositories.ShoeRepository;
 
 @RestController
@@ -35,8 +36,11 @@ public class ShoeController {
 	private CategoryRepository categoryRepository;
 
 	@Autowired
-	private ColorRepository colorRepository;
-
+	private GenreRepository genreRepository;
+	
+	@Autowired
+	private ShoeColorSizeRepository shoeColorSizeRepository;
+	
 	@GetMapping("/shoe")
 	public ResponseEntity<List<Shoe>> getAllShoes(@RequestParam(required = false) String name, 
 			@RequestParam(required = false) String description) {
@@ -85,26 +89,17 @@ public class ShoeController {
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
-	@PostMapping("/category/{id}/shoe")
-	public ResponseEntity<Shoe> addShoe(@PathVariable("id") int id, @RequestBody Shoe shoe) {
-		Category category = categoryRepository.findById(id).orElse(null);
+	@PostMapping("/category/{idcategory}/genre/{idgenre}/shoe")
+	public ResponseEntity<Shoe> addShoe(@PathVariable("idcategory") int idCategory, 
+									    @PathVariable("idgenre") int idGenre, 
+									    @RequestBody Shoe shoe) {
+		Category category = categoryRepository.findById(idCategory).orElse(null);
+		Genre genre = genreRepository.findById(idGenre).orElse(null);
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		Shoe temp = new Shoe(shoe.getName(), shoe.getDescription(), shoe.getPrice(), category);
+		Shoe temp = new Shoe(shoe.getName(), shoe.getDescription(), shoe.getPrice(), category, genre);
 		return new ResponseEntity<Shoe>(shoeRepository.save(temp), HttpStatus.CREATED);
-	}
-
-	@PostMapping("/shoe/{idshoe}/color/{idcolor}")
-	public ResponseEntity<Shoe> addShoeColor(@PathVariable("idshoe") int idShoe, @PathVariable("idcolor") int idColor) {
-		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
-		Color color = colorRepository.findById(idColor).orElse(null);
-
-		if (shoe == null || color == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		shoe.getColors().add(color);
-		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/shoe/{id}")
@@ -128,17 +123,5 @@ public class ShoeController {
 		}
 		shoeRepository.deleteById(id);
 		return new ResponseEntity<>(HttpStatus.OK);
-	}
-
-	@DeleteMapping("/shoe/{idshoe}/color/{idcolor}")
-	public ResponseEntity<Shoe> deleteShoeColor(@PathVariable("idshoe") int idShoe,
-			@PathVariable("idcolor") int idColor) {
-		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
-		Color color = colorRepository.findById(idColor).orElse(null);
-		if (shoe == null || color == null) {
-			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-		}
-		shoe.getColors().remove(color);
-		return new ResponseEntity<>(shoeRepository.save(shoe), HttpStatus.OK);
 	}
 }

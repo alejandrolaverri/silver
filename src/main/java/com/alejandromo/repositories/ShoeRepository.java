@@ -12,5 +12,4 @@ public interface ShoeRepository extends JpaRepository<Shoe, Integer> {
 	List<Shoe> findByNameContainingOrDescriptionContaining(String name, String description);
 	List<Shoe> findByCategoryIdCategory(int id);
 	boolean existsByCategoryIdCategory(int id);
-	boolean existsByColorsIdColor(int id);
 }

@@ -25,13 +25,8 @@ public class Color {
 	@Column(name = "name", length = 30, nullable = false)
 	private String name;
 
-	@ManyToMany(mappedBy = "colors")
-	@JsonIgnore
-	private Set<Shoe> shoes = new HashSet<>();
-
 	// Constructors
 	public Color() {
-
 	}
 
 	public Color(String name) {

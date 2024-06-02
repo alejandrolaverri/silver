@@ -2,6 +2,7 @@ package com.alejandromo.models;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
@@ -14,6 +15,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -25,10 +27,6 @@ public class Shoe {
 	@Column(name = "id_shoe")
 	private int idShoe;
 
-	@ManyToOne
-	@JoinColumn(name = "id_category", nullable = false)
-	private Category category;
-
 	@Column(name = "name", nullable = false, length = 100)
 	private String name;
 
@@ -37,26 +35,27 @@ public class Shoe {
 
 	@Column(name = "price", nullable = false, precision = 5, scale = 2)
 	private BigDecimal price;
+	
+    @ManyToOne
+    @JoinColumn(name = "id_category", nullable = false)
+    private Category category;
 
-	@ManyToMany(cascade = { CascadeType.MERGE })
-	@JoinTable(
-		name = "shoe_color",
-		joinColumns = { @JoinColumn(name = "id_shoe") },
-		inverseJoinColumns = { @JoinColumn(name = "id_color") }
-	)
-	Set<Color> colors = new HashSet<>();
+    @ManyToOne
+    @JoinColumn(name = "id_genre", nullable = false)
+    private Genre genre;
 	
 	// Constructors
 	public Shoe() {
 
 	}
 
-	public Shoe(String name, String description, BigDecimal price, Category category) {
-		this.category = category;
-		this.name = name;
-		this.description = description;
-		this.price = price;
-	}
+    public Shoe(String name, String description, BigDecimal price, Category category, Genre genre) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.genre = genre;
+    }
 
 	// Getters and setters
 	public int getIdShoe() {
@@ -73,6 +72,14 @@ public class Shoe {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public Genre getGenre() {
+		return genre;
+	}
+
+	public void setGenre(Genre genre) {
+		this.genre = genre;
 	}
 
 	public String getName() {
@@ -97,14 +104,6 @@ public class Shoe {
 
 	public void setPrice(BigDecimal price) {
 		this.price = price;
-	}
-
-	public Set<Color> getColors() {
-		return colors;
-	}
-
-	public void setColors(Set<Color> colors) {
-		this.colors = colors;
 	}
 
 }

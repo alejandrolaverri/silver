@@ -19,16 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.alejandromo.models.Color;
 import com.alejandromo.repositories.ColorRepository;
-import com.alejandromo.repositories.ShoeRepository;
+import com.alejandromo.repositories.ShoeColorSizeRepository;
 
 @RestController
 @RequestMapping(path="/api")
 public class ColorController {
 	@Autowired
-	ColorRepository colorRepository;
+	private ColorRepository colorRepository;
 	
 	@Autowired
-	private ShoeRepository shoeRepository;
+	private ShoeColorSizeRepository shoeColorSizeRepository;
 	
 	@GetMapping("/color")
 	public ResponseEntity<List<Color>> getAllColors(@RequestParam(required = false) String name) {
@@ -55,18 +55,6 @@ public class ColorController {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(color, HttpStatus.OK);		
-	}
-	
-	@GetMapping("shoe/{id}/color")
-	public ResponseEntity<List<Color>> getAllColorsByShoe(@PathVariable int id) {
-		List<Color> res = new ArrayList<>();
-		for(Color color: colorRepository.findByShoesIdShoe(id)) {
-			res.add(color);
-		}
-		if (res.isEmpty()) {
-			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 	
 	@PostMapping("/color")
@@ -106,7 +94,7 @@ public class ColorController {
 		if (color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (shoeRepository.existsByColorsIdColor(id)) {
+		if (shoeColorSizeRepository.existsByColorIdColor(id)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
 		colorRepository.deleteById(id);
