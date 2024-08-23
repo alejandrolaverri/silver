@@ -1,6 +1,5 @@
 package com.alejandromo.web.controller;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -17,57 +16,35 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.persistence.entity.Category;
-import com.alejandromo.persistence.entity.Genre;
-import com.alejandromo.persistence.entity.Shoe;
-import com.alejandromo.persistence.jpa.CategoryJpaRepository;
-import com.alejandromo.persistence.jpa.GenreJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeJpaRepository;
+import com.alejandromo.domain.dto.CategoryDto;
+import com.alejandromo.domain.dto.ShoeDto;
+import com.alejandromo.domain.service.CategoryService;
+import com.alejandromo.domain.service.ShoeService;
 
 @RestController
 @RequestMapping("/api")
 public class ShoeController {
 
 	@Autowired
-	private ShoeJpaRepository shoeRepository;
-
+	private ShoeService shoeService;
+	
 	@Autowired
-	private CategoryJpaRepository categoryRepository;
-
-	@Autowired
-	private GenreJpaRepository genreRepository;
+	private CategoryService categoryService;
 	
 	@GetMapping("/shoe")
-	public ResponseEntity<List<Shoe>> getAllShoes(@RequestParam(required = false) String name, 
+	public ResponseEntity<List<ShoeDto>> getAllShoes(@RequestParam(required = false) String name, 
 			@RequestParam(required = false) String description) {
-		List<Shoe> res = new ArrayList<>();
-		if (name != null && description != null) {
-			for (Shoe shoe : shoeRepository.findByNameContainingOrDescriptionContaining(name, description)) {
-				res.add(shoe);
-			}
-		} else if (name != null && description == null) {
-			for (Shoe shoe : shoeRepository.findByNameContaining(name)) {
-				res.add(shoe);
-			}
-		} else if (name == null && description != null) {
-			for (Shoe shoe : shoeRepository.findByDescriptionContaining(description)) {
-				res.add(shoe);
-			}
-		} else {
-			for (Shoe shoe : shoeRepository.findAll()) {
-				res.add(shoe);
-			}
-		}
-		if (res.isEmpty()) {
+		List<ShoeDto> shoes = shoeService.getByNameOrDescription(name, description);
+		
+		if (shoes.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		return new ResponseEntity<>(shoes, HttpStatus.OK);
 	}
 
 	@GetMapping("/shoe/{id}")
-	public ResponseEntity<Shoe> getShoe(@PathVariable int id) {
-		Shoe shoe = shoeRepository.findById(id).orElse(null);
+	public ResponseEntity<ShoeDto> getShoe(@PathVariable int id) {
+		ShoeDto shoe = shoeService.get(id);
 		if (shoe == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -75,55 +52,46 @@ public class ShoeController {
 	}
 
 	@GetMapping("/category/{id}/shoe")
-	public ResponseEntity<List<Shoe>> getAllByCategory(@PathVariable int id) {
-		List<Shoe> res = new ArrayList<>();
-		for (Shoe shoe : shoeRepository.findByCategoryIdCategory(id)) {
-			res.add(shoe);
-		}
-		if (res.isEmpty()) {
+	public ResponseEntity<List<ShoeDto>> getAllByCategory(@PathVariable int id) {
+		List<ShoeDto> shoes = shoeService.getByCategory(id);
+		if (shoes.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
-		return new ResponseEntity<>(res, HttpStatus.OK);
+		return new ResponseEntity<>(shoes, HttpStatus.OK);
 	}
 
-	@PostMapping("/category/{idcategory}/genre/{idgenre}/shoe")
-	public ResponseEntity<Shoe> addShoe(@PathVariable("idcategory") int idCategory, 
-									    @PathVariable("idgenre") int idGenre, 
-									    @RequestBody Shoe shoe) {
-		Category category = categoryRepository.findById(idCategory).orElse(null);
-		Genre genre = genreRepository.findById(idGenre).orElse(null);
+	@PostMapping("/category/{idcategory}/shoe")
+	public ResponseEntity<ShoeDto> addShoe(@PathVariable("idcategory") int idCategory, 
+									    @RequestBody ShoeDto shoe) {
+		CategoryDto category = categoryService.getCategory(idCategory);
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		Shoe temp = new Shoe(shoe.getName(), 
-							 shoe.getDescription(), 
-							 shoe.getPrice(), 
-							 category, 
-							 genre
-							);
-		return new ResponseEntity<Shoe>(shoeRepository.save(temp), HttpStatus.CREATED);
+		shoe.setCategory(category);
+		ShoeDto newShoe = shoeService.save(shoe);
+		
+		return new ResponseEntity<ShoeDto>(newShoe, HttpStatus.CREATED);
 	}
 
 	@PutMapping("/shoe/{id}")
-	public ResponseEntity<Shoe> updateShoe(@PathVariable("id") int id, @RequestBody Shoe shoe) {
-		Shoe temp = shoeRepository.findById(id).orElse(null);
+	public ResponseEntity<ShoeDto> updateShoe(@PathVariable int id, @RequestBody ShoeDto shoe) {
+		ShoeDto temp = shoeService.get(id);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} else if (temp.getIdShoe() != shoe.getIdShoe()) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			BeanUtils.copyProperties(shoe, temp);
-			return new ResponseEntity<>(shoeRepository.save(temp), HttpStatus.OK);
+			return new ResponseEntity<>(shoeService.save(shoe), HttpStatus.OK);
 		}
 	}
 
 	@DeleteMapping("/shoe/{id}")
-	public ResponseEntity<HttpStatus> deleteShoe(@PathVariable("id") int id) {
-		Shoe shoe = shoeRepository.findById(id).orElse(null);
+	public ResponseEntity<HttpStatus> deleteShoe(@PathVariable int id) {
+		ShoeDto shoe = shoeService.get(id);
 		if (shoe == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		shoeRepository.deleteById(id);
-		return new ResponseEntity<>(HttpStatus.OK);
+		return new ResponseEntity<>(shoeService.delete(id) ? HttpStatus.OK : HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 }

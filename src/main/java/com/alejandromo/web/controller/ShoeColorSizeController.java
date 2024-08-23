@@ -1,71 +1,84 @@
 package com.alejandromo.web.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.persistence.entity.Color;
-import com.alejandromo.persistence.entity.Shoe;
-import com.alejandromo.persistence.entity.ShoeColorSize;
-import com.alejandromo.persistence.entity.Size;
-import com.alejandromo.persistence.jpa.ColorJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeJpaRepository;
-import com.alejandromo.persistence.jpa.SizeJpaRepository;
+import com.alejandromo.domain.dto.ColorDto;
+import com.alejandromo.domain.dto.ShoeDto;
+import com.alejandromo.domain.dto.ShoeColorSizeDto;
+import com.alejandromo.domain.dto.SizeDto;
+import com.alejandromo.domain.service.ColorService;
+import com.alejandromo.domain.service.ShoeColorSizeService;
+import com.alejandromo.domain.service.ShoeService;
+import com.alejandromo.domain.service.SizeService;
 
 @RestController
 @RequestMapping(path="/api")
 public class ShoeColorSizeController {
 	
 	@Autowired
-	private ShoeJpaRepository shoeRepository;
-
-	@Autowired
-	private ColorJpaRepository colorRepository;
+	private ShoeColorSizeService shoeColorSizeService;
 	
 	@Autowired
-	private SizeJpaRepository sizeRepository;
+	private ShoeService shoeService;
 	
 	@Autowired
-	private ShoeColorSizeJpaRepository shoeColorSizeRepository;
+	private SizeService sizeService;
+	
+	@Autowired
+	private ColorService colorService;
+	
+	@GetMapping("/shoe/{idshoe}/details")
+	public ResponseEntity<List<ShoeColorSizeDto>> getDetailsShoe(@PathVariable("idshoe") int idShoe) {
+		ShoeDto shoe = shoeService.get(idShoe);
+		
+		if (shoe == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
+		
+		return new ResponseEntity<List<ShoeColorSizeDto>>(shoeColorSizeService.getDetailsShoe(idShoe), HttpStatus.OK);
+	}
 
 	@PostMapping("/shoe/{idshoe}/size/{idsize}/color/{idcolor}")
-	public ResponseEntity<ShoeColorSize> addModelShoe(@PathVariable("idshoe") int idShoe,
+	public ResponseEntity<ShoeColorSizeDto> addModelShoe(@PathVariable("idshoe") int idShoe,
 									@PathVariable("idsize") int idSize,
 									@PathVariable("idcolor") int idColor,
 									@RequestBody int stock) {
-		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
-		Size size = sizeRepository.findById(idSize).orElse(null);
-		Color color = colorRepository.findById(idColor).orElse(null);
+		ShoeDto shoe = shoeService.get(idShoe);
+		SizeDto size = sizeService.get(idSize);
+		ColorDto color = colorService.get(idColor);
 		
 		if (shoe == null || size ==null || color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
-		ShoeColorSize shoeColorSize = new ShoeColorSize();
+		ShoeColorSizeDto shoeColorSize = new ShoeColorSizeDto();
 		shoeColorSize.setColor(color);
 		shoeColorSize.setSize(size);
-		shoeColorSize.setShoe(shoe);
 		shoeColorSize.setStock(stock);
 		
-		return new ResponseEntity<>(shoeColorSizeRepository.save(shoeColorSize), HttpStatus.OK);
+		return new ResponseEntity<ShoeColorSizeDto>(shoeColorSizeService.save(shoeColorSize), HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/shoe/{idshoe}/color/{idcolor}")
-	public ResponseEntity<Shoe> deleteShoeColor(@PathVariable("idshoe") int idShoe,
-			@PathVariable("idcolor") int idColor) {
-		Shoe shoe = shoeRepository.findById(idShoe).orElse(null);
-		Color color = colorRepository.findById(idColor).orElse(null);
+	public ResponseEntity<HttpStatus> deleteShoeColor(@PathVariable("idshoe") int idShoe,
+													  @PathVariable("idcolor") int idColor) {
+		ShoeDto shoe = shoeService.get(idShoe);
+		ColorDto color = colorService.get(idColor);
 		if (shoe == null || color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (shoeColorSizeRepository.deleteByShoeIdAndColorId(idShoe, idColor) == 0) {
+		if (shoeColorSizeService.deleteColor(idShoe, idColor) == 0) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<>(HttpStatus.OK);

@@ -17,40 +17,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.persistence.entity.Category;
-import com.alejandromo.persistence.jpa.CategoryJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeJpaRepository;
+import com.alejandromo.domain.dto.CategoryDto;
+import com.alejandromo.domain.service.CategoryService;
+import com.alejandromo.domain.service.ShoeService;
 
 @RestController
 @RequestMapping(path = "/api")
 public class CategoryController {
 	@Autowired
-	private CategoryJpaRepository categoryRepository;
-
+	private CategoryService categoryService;
+	
 	@Autowired
-	private ShoeJpaRepository shoeRepository;
+	private ShoeService shoeService;
 
 	@GetMapping("/category")
-	public ResponseEntity<List<Category>> getAllCategories(@RequestParam(required = false) String name) {
-		List<Category> res = new ArrayList<>();
+	public ResponseEntity<List<CategoryDto>> getAllCategories(@RequestParam(required = false) String name) {
+		List<CategoryDto> res = new ArrayList<>();
 		if (name == null) {
-			for (Category category : categoryRepository.findAll()) {
-				res.add(category);
-			}
+			res = categoryService.getAll();
 		} else {
-			for (Category category : categoryRepository.findByNameContaining(name)) {
-				res.add(category);
-			}
+			res = categoryService.getByName(name);
 		}
-		if (res.isEmpty()) {
+		if (res == null) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
 		return new ResponseEntity<>(res, HttpStatus.OK);
 	}
 
 	@GetMapping("/category/{id}")
-	public ResponseEntity<Category> getCategoryById(@PathVariable int id) {
-		Category category = categoryRepository.findById(id).orElse(null);
+	public ResponseEntity<CategoryDto> getCategoryById(@PathVariable int id) {
+		CategoryDto category = categoryService.getCategory(id);
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
@@ -58,46 +54,41 @@ public class CategoryController {
 	}
 
 	@PostMapping("/category")
-	public ResponseEntity<Category> addCategory(@RequestBody Category category) {
-		Category temp = categoryRepository.save(new Category(category.getName()));
-		return new ResponseEntity<>(temp, HttpStatus.CREATED);
+	public ResponseEntity<CategoryDto> addCategory(@RequestBody CategoryDto category) {
+		return new ResponseEntity<>(categoryService.save(category), HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/categories")
-	public ResponseEntity<List<Category>> addCategories(@RequestBody List<Category> categories) {
-		List<Category> res = new ArrayList<>();
+	public ResponseEntity<List<CategoryDto>> addCategories(@RequestBody List<CategoryDto> categories) {
 		if (categories.size() == 0) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		for (Category category : categories) {
-			res.add(new Category(category.getName()));
-		}
-		return new ResponseEntity<>(categoryRepository.saveAll(categories), HttpStatus.CREATED);
+		return new ResponseEntity<>(categoryService.saveAll(categories), HttpStatus.CREATED);
 	}
 
 	@PutMapping("/category/{id}")
-	public ResponseEntity<Category> updateCategory(@PathVariable("id") int id, @RequestBody Category category) {
-		Category temp = categoryRepository.findById(id).orElse(null);
+	public ResponseEntity<CategoryDto> updateCategory(@PathVariable int id, @RequestBody CategoryDto category) {
+		CategoryDto temp = categoryService.getCategory(id);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} else if (temp.getIdCategory() != category.getIdCategory()) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			BeanUtils.copyProperties(category, temp);
-			return new ResponseEntity<>(categoryRepository.save(temp), HttpStatus.OK);
+			return new ResponseEntity<>(categoryService.save(temp), HttpStatus.OK);
 		}
 	}
 
 	@DeleteMapping("/category/{id}")
-	public ResponseEntity<HttpStatus> deleteCategory(@PathVariable("id") int id) {
-		Category category = categoryRepository.findById(id).orElse(null);
+	public ResponseEntity<HttpStatus> deleteCategory(@PathVariable int id) {
+		CategoryDto category = categoryService.getCategory(id);
 		if (category == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (shoeRepository.existsByCategoryIdCategory(id)) {
+		if (shoeService.existsShoesInCategory(id)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		categoryRepository.deleteById(id);
+		categoryService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 

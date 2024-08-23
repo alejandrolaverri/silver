@@ -1,26 +1,23 @@
 package com.alejandromo.persistence.entity;
 
 import java.math.BigDecimal;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
-import jakarta.persistence.CascadeType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "shoe")
-public class Shoe {
+public class ShoeEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,23 +35,22 @@ public class Shoe {
 	
     @ManyToOne
     @JoinColumn(name = "id_category", nullable = false)
-    private Category category;
-
-    @ManyToOne
-    @JoinColumn(name = "id_genre", nullable = false)
-    private Genre genre;
+    private CategoryEntity category;
+    
+    @OneToMany(mappedBy = "shoe")
+    @JsonIgnore
+    private List<ShoeColorSizeEntity> shoeColorSize;
 	
 	// Constructors
-	public Shoe() {
+	public ShoeEntity() {
 
 	}
 
-    public Shoe(String name, String description, BigDecimal price, Category category, Genre genre) {
+    public ShoeEntity(String name, String description, BigDecimal price, CategoryEntity category) {
         this.name = name;
         this.description = description;
         this.price = price;
         this.category = category;
-        this.genre = genre;
     }
 
 	// Getters and setters
@@ -64,22 +60,6 @@ public class Shoe {
 
 	public void setIdShoe(int idShoe) {
 		this.idShoe = idShoe;
-	}
-
-	public Category getCategory() {
-		return category;
-	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
-
-	public Genre getGenre() {
-		return genre;
-	}
-
-	public void setGenre(Genre genre) {
-		this.genre = genre;
 	}
 
 	public String getName() {
@@ -106,4 +86,25 @@ public class Shoe {
 		this.price = price;
 	}
 
+	public CategoryEntity getCategory() {
+		return category;
+	}
+
+	public void setCategory(CategoryEntity category) {
+		this.category = category;
+	}
+
+	public List<ShoeColorSizeEntity> getShoeColorSize() {
+		return shoeColorSize;
+	}
+
+	public void setShoeColorSize(List<ShoeColorSizeEntity> shoeColorSize) {
+		this.shoeColorSize = shoeColorSize;
+	}
+
+	@Override
+	public String toString() {
+		return "ShoeEntity [idShoe=" + idShoe + ", name=" + name + ", description=" + description + ", price=" + price
+				+ ", category=" + category + "]";
+	}
 }

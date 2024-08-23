@@ -1,74 +1,58 @@
-package com.alejandromo.domain;
+package com.alejandromo.domain.dto;
 
 import java.math.BigDecimal;
-import java.util.List;
 
-public class Shoe {
-	
+public class ShoeDto {
 	private int idShoe;
 	private String name;
 	private String description;
 	private BigDecimal price;
 	
-	private Category category;
-	private Genre genre;
-	
-	private List<ShoeColorSize> shoeColorSize;
-
+    private CategoryDto category;
+    
 	public int getIdShoe() {
 		return idShoe;
 	}
-	
+
 	public void setIdShoe(int idShoe) {
 		this.idShoe = idShoe;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getDescription() {
 		return description;
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
 	}
-	
+
 	public BigDecimal getPrice() {
 		return price;
 	}
-	
+
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
-	
-	public Category getCategory() {
+
+	public CategoryDto getCategory() {
 		return category;
 	}
-	
-	public void setCategory(Category category) {
+
+	public void setCategory(CategoryDto category) {
 		this.category = category;
 	}
-	
-	public Genre getGenre() {
-		return genre;
-	}
-	
-	public void setGenre(Genre genre) {
-		this.genre = genre;
-	}
-	
-	public List<ShoeColorSize> getShoeColorSize() {
-		return shoeColorSize;
-	}
 
-	public void setShoeColorSize(List<ShoeColorSize> shoeColorSize) {
-		this.shoeColorSize = shoeColorSize;
+	@Override
+	public String toString() {
+		return "Shoe [idShoe=" + idShoe + ", name=" + name + ", description=" + description + ", price=" + price
+				+ ", category=" + category + "]";
 	}
-	
 }

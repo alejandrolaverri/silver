@@ -1,30 +1,29 @@
 package com.alejandromo.domain.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
-import com.alejandromo.domain.Category;
-import com.alejandromo.domain.repository.CategoryRepository;
+import com.alejandromo.domain.dto.CategoryDto;
+import com.alejandromo.domain.repository.ICategoryRepository;
 
 @Service
 public class CategoryService {
 	
 	@Autowired
-	private CategoryRepository categoryRepository;
+	private ICategoryRepository categoryRepository;
 	
-	public List<Category> getAll() {
+	public List<CategoryDto> getAll() {
 		return categoryRepository.getAll();
 	}
 	
-	public Optional<Category> getCategory(int idCategory) {
+	public CategoryDto getCategory(int idCategory) {
 		return categoryRepository.getCategory(idCategory);
 	}
 	
-	public Category save(Category category) {
+	public CategoryDto save(CategoryDto category) {
 		return categoryRepository.save(category);
 	}
 	
@@ -35,6 +34,14 @@ public class CategoryService {
         } catch (EmptyResultDataAccessException e) {
             return false;
         }
+	}
+
+	public List<CategoryDto> getByName(String name) {
+		return categoryRepository.getByName(name);
+	}
+
+	public List<CategoryDto> saveAll(List<CategoryDto> categories) {
+		return categoryRepository.saveAll(categories);
 	}
 	
 }

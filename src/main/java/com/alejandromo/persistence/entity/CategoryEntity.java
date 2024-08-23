@@ -8,7 +8,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "category")
-public class Category {
+public class CategoryEntity {
 	
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,17 +20,25 @@ public class Category {
     
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	@JsonIgnore
-	private List<Shoe> shoes;
+	private List<ShoeEntity> shoes;
 
     // Constructor vacío
-    public Category() {}
+    public CategoryEntity() {}
 
     // Constructor con parámetros
-    public Category(String name) {
+    public CategoryEntity(int idCategory, String name) {
         this.name = name;
     }
+    
+    public int getIdCategory() {
+        return idCategory;
+    }
 
-    public String getName() {
+    public void setIdCategory(int idCategory) {
+		this.idCategory = idCategory;
+	}
+
+	public String getName() {
         return name;
     }
 
@@ -38,12 +46,13 @@ public class Category {
         this.name = name;
     }
 
-    public int getIdCategory() {
-        return idCategory;
-    }
-
-	public List<Shoe> getShoes() {
+	public List<ShoeEntity> getShoes() {
 		return shoes;
+	}
+
+	@Override
+	public String toString() {
+		return "CategoryEntity [idCategory=" + idCategory + ", name=" + name + ", shoes=" + shoes + "]";
 	}
 
 }

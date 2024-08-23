@@ -17,30 +17,26 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.alejandromo.persistence.entity.Color;
-import com.alejandromo.persistence.jpa.ColorJpaRepository;
-import com.alejandromo.persistence.jpa.ShoeColorSizeJpaRepository;
+import com.alejandromo.domain.dto.ColorDto;
+import com.alejandromo.domain.service.ColorService;
+import com.alejandromo.domain.service.ShoeColorSizeService;
 
 @RestController
 @RequestMapping(path="/api")
 public class ColorController {
 	@Autowired
-	private ColorJpaRepository colorRepository;
+	private ColorService colorService;
 	
 	@Autowired
-	private ShoeColorSizeJpaRepository shoeColorSizeRepository;
+	private ShoeColorSizeService shoeColorSizeService;
 	
 	@GetMapping("/color")
-	public ResponseEntity<List<Color>> getAllColors(@RequestParam(required = false) String name) {
-		List<Color> res = new ArrayList<>();
+	public ResponseEntity<List<ColorDto>> getAllColors(@RequestParam(required = false) String name) {
+		List<ColorDto> res = new ArrayList<>();
 		if (name == null) {
-			for (Color color : colorRepository.findAll()) {
-				res.add(color);
-			}
+			res = colorService.getAll();
 		} else {
-			for (Color color : colorRepository.findByNameContaining(name)) {
-				res.add(color);
-			}
+			res = colorService.getByName(name);
 		}
 		if (res.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
@@ -49,55 +45,50 @@ public class ColorController {
 	}
 
 	@GetMapping("/color/{id}")
-	public ResponseEntity<Color> getColor(@PathVariable("id") int id) {
-		Color color = colorRepository.findById(id).orElse(null);
+	public ResponseEntity<ColorDto> getColor(@PathVariable int id) {
+		ColorDto color = colorService.get(id);
 		if (color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<>(color, HttpStatus.OK);		
+		return new ResponseEntity<>(color, HttpStatus.OK);	
 	}
 	
 	@PostMapping("/color")
-	public ResponseEntity<Color> addColor(@RequestBody Color color) {
-		Color temp = colorRepository.save(new Color(color.getName()));
-		return new ResponseEntity<>(temp, HttpStatus.CREATED);
+	public ResponseEntity<ColorDto> addColor(@RequestBody ColorDto colorDto) {
+		return new ResponseEntity<>(colorService.save(colorDto), HttpStatus.CREATED);
 	}
 	
 	@PostMapping("/colors")
-	public ResponseEntity<List<Color>> addColors(@RequestBody List<Color> colors) {
-		List<Color> res = new ArrayList<>();
+	public ResponseEntity<List<ColorDto>> addColors(@RequestBody List<ColorDto> colors) {
 		if (colors.size() == 0) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		for (Color color : colors) {
-			res.add(new Color(color.getName()));
-		}
-		return new ResponseEntity<>(colorRepository.saveAll(res), HttpStatus.CREATED);
+		return new ResponseEntity<>(colorService.saveAll(colors), HttpStatus.CREATED);
 	}
 	
 	@PutMapping("/color/{id}")
-	public ResponseEntity<Color> updateColor(@PathVariable("id") int id, @RequestBody Color color) {
-		Color temp = colorRepository.findById(id).orElse(null);
+	public ResponseEntity<ColorDto> updateColor(@PathVariable int id, @RequestBody ColorDto color) {
+		ColorDto temp = colorService.get(id);
 		if (temp == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} else if (temp.getIdColor() != color.getIdColor()) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		} else {
 			BeanUtils.copyProperties(color, temp);
-			return new ResponseEntity<>(colorRepository.save(temp), HttpStatus.OK);	
+			return new ResponseEntity<>(colorService.save(temp), HttpStatus.OK);	
 		}
 	}
 	
 	@DeleteMapping("/color/{id}")
-	public ResponseEntity<HttpStatus> deleteColor(@PathVariable("id") int id) {
-		Color color = colorRepository.findById(id).orElse(null);
+	public ResponseEntity<HttpStatus> deleteColor(@PathVariable int id) {
+		ColorDto color = colorService.get(id);
 		if (color == null) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		if (shoeColorSizeRepository.existsByColorIdColor(id)) {
+		if (shoeColorSizeService.colorUsed(id)) {
 			return new ResponseEntity<>(HttpStatus.FORBIDDEN);
 		}
-		colorRepository.deleteById(id);
+		colorService.delete(id);
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 }

@@ -1,7 +1,6 @@
 package com.alejandromo.persistence.entity;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -10,12 +9,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "color")
-public class Color {
+public class ColorEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,12 +23,16 @@ public class Color {
 
 	@Column(name = "name", length = 30, nullable = false)
 	private String name;
+	
+	@OneToMany(mappedBy = "color")
+    @JsonIgnore
+    private List<ShoeColorSizeEntity> shoeColorSize;
 
 	// Constructors
-	public Color() {
+	public ColorEntity() {
 	}
 
-	public Color(String name) {
+	public ColorEntity(String name) {
 		this.name = name;
 	}
 
@@ -48,6 +51,14 @@ public class Color {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<ShoeColorSizeEntity> getShoeColorSize() {
+		return shoeColorSize;
+	}
+
+	public void setShoeColorSize(List<ShoeColorSizeEntity> shoeColorSize) {
+		this.shoeColorSize = shoeColorSize;
 	}
 
 }

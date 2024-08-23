@@ -1,31 +1,33 @@
 package com.alejandromo.domain.service;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alejandromo.domain.repository.ShoeColorSizeRepository;
-import com.alejandromo.domain.ShoeColorSize;
+import com.alejandromo.domain.dto.ShoeColorSizeDto;
+import com.alejandromo.domain.repository.IShoeColorSizeRepository;
 
 @Service
 public class ShoeColorSizeService {
 	
 	@Autowired
-	private ShoeColorSizeRepository shoeColorSizeRepository;
+	private IShoeColorSizeRepository shoeColorSizeRepository;
 	
+	public List<ShoeColorSizeDto> getDetailsShoe(int idShoe) {
+		return shoeColorSizeRepository.getDetailsShoe(idShoe);
+	}
 	
-	public Optional<List<ShoeColorSize>> getByShoe(int idShoe) {
-        return shoeColorSizeRepository.getByShoe(idShoe);
-    }
+	public ShoeColorSizeDto save(ShoeColorSizeDto shoeColorSize) {
+		return shoeColorSizeRepository.save(shoeColorSize);
+	}
 	
-	public Optional<List<ShoeColorSize>> getByColor(int idColor) {
-        return shoeColorSizeRepository.getByColor(idColor);
-    }
-	
-	public Optional<List<ShoeColorSize>> getBySize(int idSize) {
-        return shoeColorSizeRepository.getBySize(idSize);
-    }
-	
+	public int deleteColor(int idShoe, int idColor) {
+		return shoeColorSizeRepository.deleteColor(idShoe, idColor);
+	}
+
+	public boolean colorUsed(int idColor) {
+		return shoeColorSizeRepository.usedColor(idColor);
+		
+	}
 }
